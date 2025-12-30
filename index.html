@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CookZen</title>
+  <link rel="icon" type="image/x-icon" href="./CookZen.png">
 
   <style>
     body {
@@ -12,7 +14,11 @@
       background: #f8f8f8;
     }
 
-    /* HEADER */
+    body.red .footer { background-color: #db3131; }
+    body.orange .footer { background-color: #ffb74d; }
+    body.blue .footer { background-color: #64b5f6; }
+    body.purple .footer { background-color: #ba68c8; }
+
     .footer {
       position: fixed;
       top: 0;
@@ -22,161 +28,167 @@
       background: #db3131;
       color: white;
       display: flex;
-      align-items: flex-end;
-      padding: 20px;
+      justify-content: center;
+      align-items: center;
+      font-size: 32px;
       z-index: 10;
     }
 
-    .cookzen-title {
-      font-size: 48px;
-      font-weight: bold;
-    }
-
-    /* BARRE NOIRE */
     .barre {
       position: fixed;
       top: 120px;
       left: 0;
       width: 100%;
-      height: 6px;
+      height: 8px;
       background: black;
       z-index: 9;
     }
 
-    /* CONTENU */
-    .contenu {
-      margin-top: 150px;
-      padding: 20px;
-      font-size: 18px;
-      min-height: 60vh;
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    /* NAVIGATION */
+    /* 🔥 AJOUTS */
     .navigation {
+      position: fixed;
+      top: 128px;
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px;
+      padding: 10px 20px;
+      background: #f8f8f8;
+      z-index: 8;
     }
 
     .arrow {
-      font-size: 36px;
-      font-weight: bold;
+      font-size: 32px;
       cursor: pointer;
       user-select: none;
     }
 
-    .arrow.disabled {
-      opacity: 0.3;
-      pointer-events: none;
-    }
-
-    /* BARRE DE PROGRESSION */
     .progress-container {
       flex: 1;
-      height: 8px;
-      background: black;
+      height: 10px;
+      background: #ddd;
       margin: 0 20px;
-      border-radius: 10px;
+      border-radius: 6px;
       overflow: hidden;
     }
 
-    .progress {
+    .progress-bar {
       height: 100%;
-      background: #3fa9f5;
       width: 0%;
-      border-radius: 10px;
+      background: #db3131;
+      border-radius: 6px;
       transition: width 0.3s ease;
+    }
+
+    .contenu {
+      margin-top: 190px;
+      padding: 20px;
+      font-size: 18px;
+    }
+
+    .step {
+      display: none;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .cookzen-title {
+      position: absolute;
+      bottom: 10px;
+      left: 20px;
+      font-size: 48px;
+      font-weight: bold;
+      color: white;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- HEADER -->
   <div class="footer">
     <div class="cookzen-title">CookZen</div>
   </div>
 
   <div class="barre"></div>
 
-  <!-- CONTENU -->
-  <div class="contenu">
-    <h2 id="step-title"></h2>
-    <p id="step-text"></p>
-  </div>
-
-  <!-- NAVIGATION -->
+  <!-- 🔥 NAVIGATION -->
   <div class="navigation">
-    <div id="prev" class="arrow">&lt;</div>
+    <div class="arrow" id="prev">&lt;</div>
 
     <div class="progress-container">
-      <div id="progress" class="progress"></div>
+      <div class="progress-bar" id="progressBar"></div>
     </div>
 
-    <div id="next" class="arrow">&gt;</div>
+    <div class="arrow" id="next">&gt;</div>
   </div>
 
-  <!-- SCRIPT -->
+  <div class="contenu">
+    <div class="step active">
+      <p><strong>Préparer la pâte</strong></p>
+      <p>
+        Activez la levure avec le sucre et eau pendant 10 min.<br>
+        Mélangez les ingrédients secs, ajoutez la levure, l'huile et l'eau.<br>
+        Mélangez jusqu’à consistance épaisse et collante.
+      </p>
+    </div>
+
+    <div class="step">
+      <p><strong>Façonnage et repos</strong></p>
+      <p>Formez deux longs rouleaux. Couvrez et levez pendant 45–60 min.</p>
+    </div>
+
+    <div class="step">
+      <p><strong>Cuisson</strong></p>
+      <p>
+        Badigeonnez d’eau, incise légèrement.<br>
+        Enfournez à 220 °C avec la vapeur (bol d’eau) pendant 25–30 min.
+      </p>
+    </div>
+  </div>
+
   <script>
-    const steps = [
-      {
-        title: "Activer la levure",
-        text: "Dans un petit bol, mélangez la levure avec le sucre et 50 ml d’eau tiède. Laissez reposer 10 minutes jusqu’à ce que ça mousse."
-      },
-      {
-        title: "Préparer la pâte",
-        text: "Dans un grand saladier, mélangez les farines, la fécule, le sel et le psyllium. Ajoutez la levure activée, l’huile et le reste de l’eau tiède. Mélangez jusqu’à obtenir une pâte collante."
-      },
-      {
-        title: "Faire lever",
-        text: "Couvrez d’un torchon et laissez reposer 1 heure dans un endroit tiède. La pâte doit doubler de volume."
-      }
-    ];
-
-    let currentStep = 0;
-
-    const titleEl = document.getElementById("step-title");
-    const textEl = document.getElementById("step-text");
-    const progressEl = document.getElementById("progress");
-    const prevBtn = document.getElementById("prev");
-    const nextBtn = document.getElementById("next");
-
-    function updateStep() {
-      titleEl.textContent = steps[currentStep].title;
-      textEl.textContent = steps[currentStep].text;
-
-      // 👉 Progression logique : 0% au début
-      const percent = steps.length > 1
-        ? (currentStep / (steps.length - 1)) * 100
-        : 0;
-
-      progressEl.style.width = percent + "%";
-
-      prevBtn.classList.toggle("disabled", currentStep === 0);
-      nextBtn.classList.toggle("disabled", currentStep === steps.length - 1);
+    const savedTheme = localStorage.getItem('cookzenTheme');
+    if (savedTheme) {
+      document.body.className = savedTheme;
     }
 
-    prevBtn.addEventListener("click", () => {
-      if (currentStep > 0) {
-        currentStep--;
-        updateStep();
-      }
-    });
+    // 🔥 LOGIQUE ÉTAPES
+    const steps = document.querySelectorAll('.step');
+    const progressBar = document.getElementById('progressBar');
+    let currentStep = 0;
 
-    nextBtn.addEventListener("click", () => {
-      if (currentStep < steps.length - 1) {
+    function updateStep() {
+      steps.forEach((step, index) => {
+        step.classList.toggle('active', index === currentStep);
+      });
+
+      const progress = ((currentStep + 1) / steps.length) * 100;
+      progressBar.style.width = progress + '%';
+    }
+
+    document.getElementById('next').onclick = () => {
+      if (currentStep === steps.length - 1) {
+        window.location.href = 'index.html';
+      } else {
         currentStep++;
         updateStep();
       }
-    });
+    };
+
+    document.getElementById('prev').onclick = () => {
+      if (currentStep === 0) {
+        window.location.href = 'index.html';
+      } else {
+        currentStep--;
+        updateStep();
+      }
+    };
 
     updateStep();
   </script>
 
 </body>
 </html>
+
