@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CookZen</title>
+  <link rel="icon" type="image/x-icon" href="./CookZen.png">
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f8f8f8;
+    }
+
+    body.red .footer {
+      background-color: #db3131;
+    }
+    body.orange .footer {
+      background-color: #ffb74d;
+    }
+    body.blue .footer {
+      background-color: #64b5f6;
+    }
+    body.purple .footer {
+      background-color: #ba68c8;
+    }
+    
+    .footer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 120px;
+      background: #db3131;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 32px;
+      z-index: 10;
+    }
+    
+    .barre {
+      position: fixed;
+      top: 120px;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: #ddd;
+      z-index: 9;
+    }
+    
+    .barre-progress {
+      height: 100%;
+      background: black;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    .contenu {
+      margin-top: 140px;
+      padding: 20px;
+      padding-bottom: 100px;
+      font-size: 18px;
+    }
+    
+    .cookzen-title {
+      position: absolute;
+      bottom: 10px;
+      left: 20px;
+      font-size: 48px;
+      font-weight: bold;
+      color: white;
+    }
+    
+    .etape {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .etape.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .navigation {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: white;
+      border-top: 2px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      box-sizing: border-box;
+      z-index: 10;
+    }
+    
+    .nav-btn {
+      width: 60px;
+      height: 60px;
+      border: 3px solid #333;
+      background: white;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 32px;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+    
+    .nav-btn:hover {
+      background: #f0f0f0;
+      transform: scale(1.05);
+    }
+    
+    .nav-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .nav-btn.disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    
+    .etape-counter {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="footer">
+    <div class="cookzen-title">CookZen</div>
+  </div>
+  
+  <div class="barre">
+    <div class="barre-progress" id="progressBar"></div>
+  </div>
+  
+  <div class="contenu" id="contenu">
+    <div class="etape active" data-step="1">
+      <p><strong>Préparer la pâte</strong></p>
+      <p>Activez la levure avec le sucre et eau pendant 10 min.<br>
+      Mélangez les ingrédients secs, ajoutez la levure, l'huile et l'eau.<br>
+      Mélangez jusqu'à consistance épaisse et collante.</p>
+    </div>
+
+    <div class="etape" data-step="2">
+      <p><strong>Façonnage et repos</strong></p>
+      <p>Formez deux longs rouleaux. Couvrez et levez pendant 45–60 min.</p>
+    </div>
+
+    <div class="etape" data-step="3">
+      <p><strong>Cuisson</strong></p>
+      <p>Badigeonnez d'eau, incise légèrement.<br>
+      Enfournez à 220 °C avec la vapeur (bol d'eau) pendant 25–30 min.</p>
+    </div>
+  </div>
+  
+  <div class="navigation">
+    <div class="nav-btn" id="btnPrev">←</div>
+    <div class="etape-counter" id="counter">1/3</div>
+    <div class="nav-btn" id="btnNext">→</div>
+  </div>
+
+  <script>
+    const savedTheme = localStorage.getItem('cookzenTheme');
+    if (savedTheme) {
+      document.body.className = savedTheme;
+    }
+    
+    let currentStep = 1;
+    const totalSteps = 3;
+    
+    const etapes = document.querySelectorAll('.etape');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const counter = document.getElementById('counter');
+    const progressBar = document.getElementById('progressBar');
+    
+    function updateUI() {
+      etapes.forEach(etape => {
+        etape.classList.remove('active');
+        if (parseInt(etape.dataset.step) === currentStep) {
+          etape.classList.add('active');
+        }
+      });
+      
+      counter.textContent = `${currentStep}/${totalSteps}`;
+      
+      const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+      progressBar.style.width = progress + '%';
+      
+      btnPrev.classList.toggle('disabled', currentStep === 1);
+      btnNext.classList.toggle('disabled', currentStep === totalSteps);
+    }
+    
+    btnPrev.addEventListener('click', () => {
+      if (currentStep > 1) {
+        currentStep--;
+        updateUI();
+      }
+    });
+    
+    btnNext.addEventListener('click', () => {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateUI();
+      }
+    });
+    
+    updateUI();
+  </script>
+</body>
+</html>
