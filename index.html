@@ -8,12 +8,12 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
       background: #f8f8f8;
     }
 
     /* HEADER */
-    .header {
+    .footer {
       position: fixed;
       top: 0;
       left: 0;
@@ -24,13 +24,16 @@
       display: flex;
       align-items: flex-end;
       padding: 20px;
-      font-size: 42px;
-      font-weight: bold;
       z-index: 10;
     }
 
+    .cookzen-title {
+      font-size: 48px;
+      font-weight: bold;
+    }
+
     /* BARRE NOIRE */
-    .top-bar {
+    .barre {
       position: fixed;
       top: 120px;
       left: 0;
@@ -41,9 +44,10 @@
     }
 
     /* CONTENU */
-    .content {
+    .contenu {
       margin-top: 150px;
       padding: 20px;
+      font-size: 18px;
       min-height: 60vh;
     }
 
@@ -60,7 +64,8 @@
     }
 
     .arrow {
-      font-size: 32px;
+      font-size: 36px;
+      font-weight: bold;
       cursor: pointer;
       user-select: none;
     }
@@ -70,19 +75,21 @@
       pointer-events: none;
     }
 
-    /* PROGRESS BAR */
+    /* BARRE DE PROGRESSION */
     .progress-container {
       flex: 1;
       height: 8px;
       background: black;
       margin: 0 20px;
-      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
     }
 
     .progress {
       height: 100%;
       background: #3fa9f5;
       width: 0%;
+      border-radius: 10px;
       transition: width 0.3s ease;
     }
   </style>
@@ -90,24 +97,31 @@
 
 <body>
 
-  <div class="header">CookZen</div>
-  <div class="top-bar"></div>
+  <!-- HEADER -->
+  <div class="footer">
+    <div class="cookzen-title">CookZen</div>
+  </div>
 
-  <div class="content">
+  <div class="barre"></div>
+
+  <!-- CONTENU -->
+  <div class="contenu">
     <h2 id="step-title"></h2>
     <p id="step-text"></p>
   </div>
 
+  <!-- NAVIGATION -->
   <div class="navigation">
-    <div id="prev" class="arrow">◀</div>
+    <div id="prev" class="arrow">&lt;</div>
 
     <div class="progress-container">
       <div id="progress" class="progress"></div>
     </div>
 
-    <div id="next" class="arrow">▶</div>
+    <div id="next" class="arrow">&gt;</div>
   </div>
 
+  <!-- SCRIPT -->
   <script>
     const steps = [
       {
@@ -136,7 +150,11 @@
       titleEl.textContent = steps[currentStep].title;
       textEl.textContent = steps[currentStep].text;
 
-      const percent = ((currentStep + 1) / steps.length) * 100;
+      // 👉 Progression logique : 0% au début
+      const percent = steps.length > 1
+        ? (currentStep / (steps.length - 1)) * 100
+        : 0;
+
       progressEl.style.width = percent + "%";
 
       prevBtn.classList.toggle("disabled", currentStep === 0);
