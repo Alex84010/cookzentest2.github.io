@@ -1,168 +1,164 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CookZen</title>
-<link rel="icon" href="./CookZen.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CookZen</title>
 
-<style>
-body{
-  margin:0;
-  font-family:sans-serif;
-  background:#f8f8f8;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+    }
 
-/* HEADER */
-.footer{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:120px;
-  background:#db3131;
-  display:flex;
-  align-items:flex-end;
-  padding:15px;
-  box-sizing:border-box;
-  z-index:10;
-}
-.cookzen-title{
-  font-size:48px;
-  font-weight:bold;
-  color:white;
-}
+    /* HEADER */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 120px;
+      background: #db3131;
+      color: white;
+      display: flex;
+      align-items: flex-end;
+      padding: 20px;
+      font-size: 42px;
+      font-weight: bold;
+      z-index: 10;
+    }
 
-/* BARRE NOIRE */
-.barre{
-  position:fixed;
-  top:120px;
-  left:0;
-  width:100%;
-  height:8px;
-  background:black;
-  z-index:9;
-}
+    /* BARRE NOIRE */
+    .top-bar {
+      position: fixed;
+      top: 120px;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: black;
+      z-index: 9;
+    }
 
-/* CONTENU */
-.contenu{
-  margin-top:150px;
-  padding:20px;
-  padding-bottom:100px;
-  font-size:18px;
-}
+    /* CONTENU */
+    .content {
+      margin-top: 150px;
+      padding: 20px;
+      min-height: 60vh;
+    }
 
-/* NAVIGATION RECETTE */
-.nav-recipe{
-  position:fixed;
-  bottom:10px;
-  left:0;
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
-  padding:10px;
-  background:white;
-  box-shadow:0 -2px 8px rgba(0,0,0,0.2);
-}
+    h2 {
+      margin-top: 0;
+    }
 
-.nav-recipe button{
-  font-size:30px;
-  background:none;
-  border:none;
-  cursor:pointer;
-}
+    /* NAVIGATION */
+    .navigation {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+    }
 
-/* BARRE PROGRESSION */
-.progress-container{
-  width:60%;
-  height:10px;
-  background:black;
-  border-radius:10px;
-  overflow:hidden;
-}
-#progressBar{
-  height:100%;
-  width:0%;
-  background:#4dabf7;
-  transition:width 0.3s;
-}
-</style>
+    .arrow {
+      font-size: 32px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .arrow.disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* PROGRESS BAR */
+    .progress-container {
+      flex: 1;
+      height: 8px;
+      background: black;
+      margin: 0 20px;
+      position: relative;
+    }
+
+    .progress {
+      height: 100%;
+      background: #3fa9f5;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="footer">
-  <div class="cookzen-title">CookZen</div>
-</div>
+  <div class="header">CookZen</div>
+  <div class="top-bar"></div>
 
-<div class="barre"></div>
-
-<div class="contenu">
-  <h2 id="stepTitle"></h2>
-  <p id="stepText"></p>
-</div>
-
-<div class="nav-recipe">
-  <button id="prevStep">⬅</button>
-
-  <div class="progress-container">
-    <div id="progressBar"></div>
+  <div class="content">
+    <h2 id="step-title"></h2>
+    <p id="step-text"></p>
   </div>
 
-  <button id="nextStep">➡</button>
-</div>
+  <div class="navigation">
+    <div id="prev" class="arrow">◀</div>
 
-<script>
-const steps = [
-  {
-    title:"Activer la levure",
-    text:"Dans un petit bol, mélangez la levure avec le sucre et 50 ml d’eau tiède. Laissez reposer 10 minutes jusqu’à ce que ça mousse."
-  },
-  {
-    title:"Préparer la pâte",
-    text:"Dans un grand saladier, mélangez les farines, la fécule, le sel et le psyllium. Ajoutez la levure activée, l’huile et le reste de l’eau tiède. Mélangez jusqu’à obtenir une pâte collante."
-  },
-  {
-    title:"Faire lever",
-    text:"Couvrez d’un torchon et laissez reposer 1 heure dans un endroit tiède. La pâte doit doubler de volume."
-  },
-  {
-    title:"Cuisson",
-    text:"Badigeonnez d’eau, incisez légèrement et enfournez à 220°C pendant 25 à 30 minutes avec un bol d’eau pour la vapeur."
-  }
-];
+    <div class="progress-container">
+      <div id="progress" class="progress"></div>
+    </div>
 
-let currentStep = 0;
+    <div id="next" class="arrow">▶</div>
+  </div>
 
-const stepTitle = document.getElementById("stepTitle");
-const stepText = document.getElementById("stepText");
-const progressBar = document.getElementById("progressBar");
+  <script>
+    const steps = [
+      {
+        title: "Activer la levure",
+        text: "Dans un petit bol, mélangez la levure avec le sucre et 50 ml d’eau tiède. Laissez reposer 10 minutes jusqu’à ce que ça mousse."
+      },
+      {
+        title: "Préparer la pâte",
+        text: "Dans un grand saladier, mélangez les farines, la fécule, le sel et le psyllium. Ajoutez la levure activée, l’huile et le reste de l’eau tiède. Mélangez jusqu’à obtenir une pâte collante."
+      },
+      {
+        title: "Faire lever",
+        text: "Couvrez d’un torchon et laissez reposer 1 heure dans un endroit tiède. La pâte doit doubler de volume."
+      }
+    ];
 
-function updateStep(){
-  stepTitle.textContent = steps[currentStep].title;
-  stepText.textContent = steps[currentStep].text;
+    let currentStep = 0;
 
-  const percent = ((currentStep + 1) / steps.length) * 100;
-  progressBar.style.width = percent + "%";
-}
+    const titleEl = document.getElementById("step-title");
+    const textEl = document.getElementById("step-text");
+    const progressEl = document.getElementById("progress");
+    const prevBtn = document.getElementById("prev");
+    const nextBtn = document.getElementById("next");
 
-document.getElementById("nextStep").addEventListener("click",()=>{
-  if(currentStep < steps.length - 1){
-    currentStep++;
+    function updateStep() {
+      titleEl.textContent = steps[currentStep].title;
+      textEl.textContent = steps[currentStep].text;
+
+      const percent = ((currentStep + 1) / steps.length) * 100;
+      progressEl.style.width = percent + "%";
+
+      prevBtn.classList.toggle("disabled", currentStep === 0);
+      nextBtn.classList.toggle("disabled", currentStep === steps.length - 1);
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (currentStep > 0) {
+        currentStep--;
+        updateStep();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        updateStep();
+      }
+    });
+
     updateStep();
-  }
-});
-
-document.getElementById("prevStep").addEventListener("click",()=>{
-  if(currentStep > 0){
-    currentStep--;
-    updateStep();
-  }
-});
-
-updateStep();
-</script>
+  </script>
 
 </body>
 </html>
